@@ -1,8 +1,35 @@
+/* ROOT CUSTOM VARIABLES */
+
 :root {
   --status-green: #9cc8a3;
   --status-red: #daaaaa;
   --delete-red: #c96868;
+  --dark-blue: #3A4D5F;
+  --dark-blue-hover: #4e5b67;
+  --light-blue: #7292AF;
+  --light-blue-hover: #5e7993;
+  --white-hover: #b3b3b3;
+  --dark-font-color: #3A4D5F;
+  --light-font-color: #ffffff;
 }
+
+:root.light {
+  --background-color: #ffffff;
+  --card-title-color: #3A4D5F;
+  --card-subinfo-color: #5e7993;
+  --delete-overlay-color: rgb(255, 255, 255, 0.5);
+  --delete-color: #3A4D5F;
+}
+
+:root.dark {
+  --background-color: #0f181c;
+  --card-title-color: #ffffff;
+  --card-subinfo-color: #b3b3b3;
+  --delete-overlay-color: rgba(0, 0, 0, 0.5);
+  --delete-color: #b3b3b3;
+}
+
+/* GENERAL PROPERTIES */
 
 *, *::after, *::before {
   box-sizing: border-box;
@@ -12,7 +39,7 @@ button, input, select {
   font-family: 'Figtree', sans-serif;
 }
 
-button:hover, .delete-mode, .delete {
+button:hover, .delete-mode, .delete, .compact-add-btn, .compact-delete-mode, .theme{
   cursor: pointer;
 }
 
@@ -21,13 +48,43 @@ h1, h2, h3, h4, h5, p {
   margin: 0;
 }
 
-body {
-  display: block;
-  font-family: 'Figtree', sans-serif;
-  background-color: #ffffff;
-  color: #ffffff;
-  margin: auto;
+.material-symbols-outlined {
+  color: white;
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 600,
+  'GRAD' 0,
+  'opsz' 48
 }
+
+.material-symbols-rounded {
+  color: white;
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48;
+}
+
+.active {
+  display: block;
+}
+
+/* BODY */
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Figtree', sans-serif;
+  background-color: var(--background-color);
+  color: white;
+  margin: auto;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* HEADER */
 
 header {
   display: flex;
@@ -35,24 +92,32 @@ header {
   align-items: center;
   width: 100%;
   padding: 20px 20px 20px 20px;
-  background-color: #3A4D5F;
+  background-color: var(--dark-blue);
+}
+
+.logo {
+  color: var(--light-font-color);
 }
 
 .mid-div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  width: 240px;
+  background-color: transparent;
   position: absolute;
-  text-align: center;
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+
+.add-btn {
+  position: absolute;
   margin: auto;
   left: 0;
   right: 0;
   width: fit-content;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  align-content: flex-start;
-  gap: 20px;
-}
-
-.add-btn {
   width: 150px;
   height: 3rem;
   background-color: #7292AF;
@@ -60,17 +125,23 @@ header {
   border-radius: 25px;
   font-weight: 700;
   font-size: 1.15rem;
-  color: #ffffff;
+  color: var(--light-font-color);
   transition: 100ms;
 }
 
 .add-btn:hover {
   scale: 1.05;
-  background-color: #5e7993;
+  background-color: var(--light-blue-hover);
+}
+
+.delete-mode {
+  scale: 1.25;
+  position: absolute;
+  right: 0;
 }
 
 .delete-mode:hover {
-  color: #b3b3b3;
+  color: var(--white-hover);
 }
 
 nav {
@@ -83,18 +154,12 @@ nav {
 .login {
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--light-font-color);
   font-weight: 700;
   font-size: 1.25rem;
 }
 
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 600,
-  'GRAD' 0,
-  'opsz' 48
-}
+/* BOOK MODAL */
 
 .book-modal {
   position: absolute;
@@ -113,9 +178,10 @@ nav {
   align-items: center;
   gap: 2rem;
   width: 300px;
-  background-color: #3A4D5F;
+  background-color: var(--dark-blue);
   padding: 30px 0 30px 0;
   border-radius: 25px;
+  position: relative;
 }
 
 input {
@@ -124,8 +190,24 @@ input {
   padding: 0.75rem;
   border: 2px solid #7292AF;
   border-radius: 15px;
-  background: #ffffff;
-  color: #3A4D5F;
+  background-color: white;
+  color: var(--dark-font-color);
+}
+
+input[type="text"], input[type="number"] {
+  outline-color: var(--white-hover);
+}
+
+.error-msg {
+  display: none;
+  position: absolute;
+  width: fit-content;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 140px;
+  font-size: 0.85rem;
+  color: var(--status-red)
 }
 
 select {
@@ -135,42 +217,61 @@ select {
   order: 2px solid #7292AF;
   border-radius: 15px;
   background: #ffffff;
-  color: #3A4D5F;
+  color: var(--dark-font-color);
+}
+
+select:focus {
+  outline: none;
 }
 
 .submit {
   text-align: center;
   width: 150px;
   height: 3rem;
-  background-color: #7292AF;
+  background-color: var(--light-blue);
   border: none;
   border-radius: 25px;
   font-weight: 700;
   font-size: 1.15rem;
-  color: #ffffff;
+  color: var(--light-font-color)
 }
 
-.overlay {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #3A4D5F;
+  background-color: var(--dark-blue);
   opacity: 50%;
   display: none;
 }
 
+/* MAIN */
+
 main {
+  margin: 0;
+  padding: 0;
+}
+
+.no-books-h1 {
+  display: block;
+  color: var(--dark-font-color);
   margin: auto;
+  margin-top: 80px;
+  width: auto;
+  text-align: center;
+  padding: 20px 80px 20px 80px;
+
 }
 
 .book-container {
   display: grid;
   width: min-content;
-  margin: 75px auto 0 auto;
-  grid-template-columns: repeat(4, 250px);
-  column-gap: 20px;
+  margin: 75px auto 75px auto;
+  grid-template-columns: repeat(4, 300px);
+  column-gap: 40px;
+  row-gap: 40px;
 }
 
 .book-item {
@@ -179,50 +280,50 @@ main {
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  gap: 20px;
+  gap: 10px;
   border: 5px solid #c8c8c8;
   border-radius: 50px;
-  height: 250px;
-  aspect-ratio: 1;
+  min-height: 250px;
+  margin-bottom: auto;
 }
 
 .book-title {
-  color: #3A4D5F;
+  color: var(--card-title-color);
+  text-align: center;
+  word-wrap: break-word;
+  /*white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;*/
+  max-width: 200px;
 }
 
 .book-author {
   font-size: 1rem;
   font-weight: 500;
   font-style: italic;
-  color: #5e7993;
+  color: var(--card-subinfo-color);
+  text-align: center;
 }
 
 .book-pages {
   font-size: 1rem;
   font-weight: 700;
-  color: #5e7993;
+  color: var(--card-subinfo-color);
+  text-align: center;
+  padding-bottom: 75px;
 }
 
 .book-status {
   position: absolute;
   bottom: 0;
   font-size: 1rem;
-  width: 80%;
+  width: 85%;
   margin-bottom: 20px;
   padding: 20px;
   border: none;
   border-radius: 50px;
   background-color: var(--status-green);
-  color: white;
-}
-
-.material-symbols-rounded {
-  font-variation-settings:
-  'FILL' 1,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 48;
-  
+  color: var(--light-font-color);
 }
 
 .delete{
@@ -236,11 +337,11 @@ main {
   width: fit-content;
   aspect-ratio: 1;
   z-index: 1;
-  color: #3A4D5F;
 }
 
 .delete > span {
   display: block;
+  color: var(--delete-color);
 }
 
 .delete-icon:hover {
@@ -253,9 +354,93 @@ main {
   width: 100%;
   height: 100%;
   z-index: 1;
-  background-color: rgb(255, 255, 255, 0.5);
+  background-color: var(--delete-overlay-color);
 }
 
-.active {
-  display: block;
+/* COMPACT BUTTONS */
+
+.compact-btns {
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 0 20px 20px 0;
+  z-index: 1;
+}
+
+.compact-add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--light-blue);
+  position: relative;
+  transition: scale 100ms;
+}
+
+.compact-add-btn:hover {
+  scale: 1.05;
+  background-color: var(--light-blue-hover);
+}
+
+.compact-add-icon {
+  scale: 2.5;
+}
+
+.compact-delete-mode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--dark-blue);
+  z-index: 2;
+  transition: scale 100ms;
+}
+
+.compact-delete-mode:hover {
+  scale: 1.05;
+  background-color: var(--dark-blue-hover);
+}
+
+.compact-delete-icon {
+  scale: 0.75;
+}
+
+/* MEDIA QUERIES */
+
+@media (max-width: 1400px) {
+  .book-container {
+    grid-template-columns: repeat(3, 300px);
+  }
+}
+
+@media (max-width: 1070px) {
+  .book-container {
+    grid-template-columns: repeat(2, 300px);
+  }
+}
+
+@media (max-width: 730px) {
+  .book-container {
+    grid-template-columns: repeat(1, 300px);
+  }
+}
+
+@media (max-width: 630px) {
+  .mid-div {
+    display: none;
+  }
+
+  .compact-btns {
+    display: flex;
+  }
 }

@@ -1,18 +1,26 @@
 const addBtn = document.getElementById('add-btn');
-const overlay = document.getElementById('overlay');
+const deleteModeBtn = document.getElementById('delete-mode');
+const deleteOverlay = document.getElementById('delete-overlay');
+const themeBtn = document.getElementById('theme');
+const root = document.documentElement;
+
+const compactAddBtn = document.getElementById('compact-add-btn');
+const compactDeleteModeBtn = document.getElementById('compact-delete-mode');
+
+const noBooksH1 = document.getElementById('no-books-h1');
+
+const modalOverlay = document.getElementById('modal-overlay');
 const bookModal = document.getElementById('book-modal');
 const bookForm = document.getElementById('book-form');
-const bookContainer = document.getElementById('book-container');
 const titleInput = document.getElementById('title');
 const authorInput = document.getElementById('author');
 const pagesInput = document.getElementById('pages');
 const statusInput = document.getElementById('status');
-/* const bookStatusBtns = Array.from(document.querySelectorAll('.book-status')); */
-const deleteModeBtn = document.getElementById('delete-mode');
-const deleteOverlay = document.getElementById('delete-overlay');
+const errorMsg = document.getElementById('error-msg');
+
+const bookContainer = document.getElementById('book-container');
 
 const library = [];
-/* let bookCount = library.length - 1; */
 
 class Book {
   constructor(title, author, pages, status) {
@@ -36,18 +44,28 @@ function resetForm() {
   document.getElementById('book-form').reset();
 }
 
-/* function toggleStatus() {
-  if (bookStatusBtn.textContent === 'Read') {
-    bookStatusBtn.textContent = 'Unread';
-    statusColor('Unread', bookStatusBtn);
+function noBooksStatus() {
+  if (bookContainer.innerHTML === '') {
+    noBooksH1.style.display = 'block';
   } else {
-    bookStatusBtn.textContent = 'Read';
-    statusColor('Read', bookStatusBtn);
+    noBooksH1.style.display = 'none';
   }
-} */
+}
+
+root.classList = 'light';
+
+function toggleTheme() {
+  if (themeBtn.textContent === 'light_mode') {
+    themeBtn.textContent = 'dark_mode';
+    root.classList = 'dark';
+  } else {
+    themeBtn.textContent = 'light_mode';
+    root.classList = 'light';
+  }
+}
 
 function toggleBookModal() {
-  overlay.classList.toggle('active');
+  modalOverlay.classList.toggle('active');
   bookModal.classList.toggle('active');
 }
 
@@ -88,22 +106,31 @@ function addNewBook(book) {
   bookItem.appendChild(bookDelete);
 
   function toggleStatus() {
+    const toChange = bookStatus.parentNode.firstChild.textContent;
+    const toChangePosition = library.findIndex((x) => x.title === toChange);
     if (bookStatus.textContent === 'Read') {
       bookStatus.textContent = 'Unread';
       statusColor('Unread', bookStatus);
+      library[toChangePosition].status = 'Unread';
     } else {
       bookStatus.textContent = 'Read';
       statusColor('Read', bookStatus);
+      library[toChangePosition].status = 'Read';
     }
   }
 
   bookStatus.addEventListener('click', toggleStatus);
   statusColor(book.status, bookStatus);
+  noBooksStatus();
   resetForm();
 }
 
 function getNewBook(e) {
   e.preventDefault();
+  if (library.some((x) => x.title === titleInput.value)) {
+    errorMsg.classList.add('active');
+    return;
+  }
   toggleBookModal();
   const title = titleInput.value;
   const author = authorInput.value;
@@ -112,12 +139,22 @@ function getNewBook(e) {
   const newBook = new Book(title, author, pages, status);
   library.push(newBook);
   addNewBook(library[library.length - 1]);
+  errorMsg.classList.remove('active');
 }
 
 function toggleDeleteMode() {
+  if (bookModal.classList.contains('active')) {
+    return;
+  }
+  if (bookContainer.innerHTML === '' && deleteModeBtn.textContent === 'delete') {
+    return;
+  }
   const deleteBtns = document.querySelectorAll('.delete');
   if (deleteModeBtn.textContent === 'delete') {
+    addBtn.removeEventListener('click', toggleBookModal);
+    compactAddBtn.removeEventListener('click', toggleBookModal);
     deleteModeBtn.textContent = 'check_circle';
+    compactDeleteModeBtn.firstChild.textContent = 'check_circle';
     deleteBtns.forEach((btn) => {
       btn.classList.toggle('active');
       btn.addEventListener('click', (e) => {
@@ -129,28 +166,24 @@ function toggleDeleteMode() {
     });
     deleteOverlay.classList.toggle('active');
   } else {
+    addBtn.addEventListener('click', toggleBookModal);
+    compactAddBtn.addEventListener('click', toggleBookModal);
     deleteModeBtn.textContent = 'delete';
+    compactDeleteModeBtn.firstChild.textContent = 'delete';
     deleteBtns.forEach((btn) => {
       btn.classList.toggle('active');
     });
     deleteOverlay.classList.toggle('active');
+    noBooksStatus();
   }
 }
 
 addBtn.addEventListener('click', toggleBookModal);
-bookForm.addEventListener('submit', getNewBook);
 deleteModeBtn.addEventListener('click', toggleDeleteMode);
+modalOverlay.addEventListener('click', toggleBookModal);
+bookForm.addEventListener('submit', getNewBook);
+themeBtn.addEventListener('click', toggleTheme);
+noBooksStatus();
 
-/* bookStatusBtns.forEach((button) => {
-  button.addEventListener('click', () => {
-    console.log(button);
-    const currentBtn = button;
-    if (button.textContent === 'Read') {
-      currentBtn.textContent = 'Unread';
-      statusColor('Unread', button);
-    } else {
-      currentBtn.textContent = 'Read';
-      statusColor('Read', button);
-    }
-  });
-}); */
+compactAddBtn.addEventListener('click', toggleBookModal);
+compactDeleteModeBtn.addEventListener('click', toggleDeleteMode);
